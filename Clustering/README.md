@@ -10,10 +10,10 @@ EMNIST Digits (NIST), 280,000 samples for K-Means (raw 784-pixel features) and 2
 
 | | K-Means | GMM |
 |---|---|---|
-| Samples | 280,000 | 240,000 |
+| Samples | 280,000 | 280,000 |
 | Features | 784 | 50 (post-PCA) |
 | Clusters / components | 10 | 10 (diagonal covariance) |
-| Max iterations | 100 | 300 |
+| Max iterations | 100 | 100 |
 | Seed | 42 | 42 |
 | GPU | Tesla T4 | Tesla T4 |
 
