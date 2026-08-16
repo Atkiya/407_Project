@@ -4,11 +4,11 @@ Ten model pairs, five tasks, one question: does GPU acceleration actually save e
 
 | Task | Report |
 |---|---|
-| Classification | [README-classification.md](README-classification.md) |
-| Regression | [README-regression.md](README-regression.md) |
-| Clustering | [README-clustering.md](README-classification.md](https://github.com/Atkiya/407_Project/blob/main/Clustering/README.md) |
-| Text Generation | [README-text-generation.md](README-text-generation.md) |
-| Image Generation | [README-image-generation.md](README-image-generation.md) |
+| Classification | [README-classification.md](https://github.com/Atkiya/407_Project/blob/main/Classification/README.md) |
+| Regression | [README-regression.md](https://github.com/Atkiya/407_Project/blob/main/Regression/README.md) |
+| Clustering | [README-clustering.md](https://github.com/Atkiya/407_Project/blob/main/Clustering/README.md) |
+| Text Generation | [README-text-generation.md](https://github.com/Atkiya/407_Project/blob/main/Text%20Generation/README.md) |
+| Image Generation | [README-image-generation.md](https://github.com/Atkiya/407_Project/blob/main/Image%20Generation/README.md) |
 
 ## Method
 
