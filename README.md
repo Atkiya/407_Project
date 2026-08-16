@@ -41,7 +41,7 @@ Speed and energy do not move together automatically. The MLP and both regression
 | Linear Regression | O(n·d) | High per-operation, but too little total work per sample |
 | MLP | O(n·d·H) | Moderate |
 | K-Means | O(n·k·d) | Very high |
-| GMM | O(n·k·d), heavier constant | Very high |
+| GMM | O(n·k·d),  | Very high |
 | CNN | O(n·k²·C·H·W) | Very high |
 | RNN | O(n·T·H²) | Moderate, limited by sequential timesteps |
 | LSTM | O(n·T·4H²) | Moderate to high |
