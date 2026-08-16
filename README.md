@@ -75,3 +75,89 @@ The models with the biggest constant factor on top of their complexity term (CNN
 ## Two algorithms per task, on purpose
 
 Each task pairs a lighter and a heavier implementation of the same problem, not to rank one algorithm above the other, but to isolate what algorithmic complexity alone does to the CPU-GPU trade-off. K-Means was never meant to compete with GMM, and the RNN was never meant to compete with the LSTM. Keeping the dataset and hardware fixed while only the model complexity changes is what makes the pattern in this project visible instead of assumed.
+
+
+
+# Libraries Used
+
+Every library that appears across the twenty notebooks, grouped by what it is doing in this project.
+
+## Core deep learning
+
+**PyTorch (`torch`, `torch.nn`, `torch.nn.functional`)**
+Builds and trains all the neural network models: the MLP and CNN classifiers, the Linear Regression and MLP regressors, the RNN and LSTM, and the VAE and DCGAN. Handles the forward pass, backpropagation, and the actual switch between CPU and GPU execution through the `device` argument, which is the whole point of this project.
+
+**torchvision (`datasets`, `transforms`, `utils.make_grid`)**
+Downloads and loads the EMNIST Digits dataset, applies preprocessing transforms (normalization, tensor conversion), and arranges generated or reconstructed images into a grid for visual inspection in the VAE and DCGAN notebooks.
+
+**torch.utils.data (`Dataset`, `DataLoader`, `TensorDataset`)**
+Wraps the raw data into batches and feeds them to the model during training. `DataLoader` is what actually produces the batch-size-128 or batch-size-1024 chunks referenced throughout the results tables.
+
+## Clustering
+
+**pomegranate (`pomegranate.gmm.GeneralMixtureModel`, `pomegranate.distributions.Normal`)**
+Implements the Gaussian Mixture Model used in the clustering task. This library runs on both CPU and GPU through PyTorch tensors underneath, which is why the GMM notebooks can measure a genuine device comparison rather than switching to a different algorithm implementation for GPU.
+
+**scikit-learn (`sklearn.preprocessing.StandardScaler`, `sklearn.decomposition.PCA`, `sklearn.metrics`)**
+`StandardScaler` normalizes pixel features before clustering. `PCA` reduces the EMNIST images from 784 raw pixels down to 50 dimensions before GMM fitting. `sklearn.metrics` supplies the evaluation functions: `adjusted_rand_score`, `normalized_mutual_info_score`, and the regression metrics `mean_squared_error`, `mean_absolute_error`, `median_absolute_error`, and `r2_score`.
+
+K-Means itself is not from scikit-learn in these notebooks. It is a custom PyTorch implementation, which is what lets it run on GPU without a separate GPU-only clustering library.
+
+**scipy (`scipy.optimize.linear_sum_assignment`)**
+Solves the assignment problem between predicted cluster labels and true digit labels, since K-Means and GMM produce arbitrary cluster indices that need to be matched to the actual 0 to 9 digit classes before accuracy can be computed.
+
+## Measurement and monitoring
+
+**CodeCarbon (`codecarbon.EmissionsTracker`)**
+Tracks energy consumption and estimates CO2e emissions during training and inference by reading CPU, GPU, and RAM power draw and combining it with a regional grid carbon-intensity estimate. This is the source of every energy and carbon figure in the report.
+
+**psutil**
+Reads live process memory usage. Used to record peak process RAM during training and inference, reported as "peak process RAM" in every results table.
+
+## Data handling and numerical computation
+
+**NumPy (`numpy`)**
+Backs most of the array math outside of PyTorch tensors: label arrays, intermediate calculations, and conversions between PyTorch tensors and plain arrays for use with scikit-learn and scipy.
+
+**pandas (`pandas`)**
+Builds the results tables that get saved to CSV at the end of each notebook (for example `cnn_emnist_cpu_result.csv`), and loads the paired CPU and GPU result files back in for the side-by-side comparison cells.
+
+**matplotlib (`matplotlib.pyplot`)**
+Plots training curves, confusion matrices, and generated or reconstructed image grids.
+
+## Standard library and utility
+
+**os, sys, subprocess, importlib.util**
+Used together in an `ensure_package` helper at the top of most notebooks that checks whether CodeCarbon (and occasionally other packages) is already installed and installs it with pip if not.
+
+**time**
+Provides `time.perf_counter()` for all the wall-clock timing measurements: training time, inference time, generation time.
+
+**threading**
+Runs a background thread that polls `psutil` at a fixed interval during training, which is how peak RAM is captured even while the main thread is busy training.
+
+**random, platform, warnings, gc, copy, math, glob, zipfile, urllib.request**
+Standard housekeeping: `random` and the PyTorch/NumPy seed calls fix the random seed for reproducibility, `platform` reports CPU core count and system info, `warnings` suppresses noisy library warnings, `gc` forces garbage collection between CPU and GPU runs to avoid memory carryover, and `copy`, `math`, `glob`, `zipfile`, and `urllib.request` handle small preprocessing and file-handling tasks such as downloading and unzipping the YearPredictionMSD dataset.
+
+**pathlib.Path**
+Handles file paths for saving and loading the CSV result files across notebooks, instead of manual string concatenation.
+
+**collections.Counter**
+Counts character or token frequency while building the vocabulary for the Tiny Shakespeare character-level text-generation models.
+
+## Summary table
+
+| Library | Role |
+|---|---|
+| torch | Model definition, training, backpropagation, CPU/GPU device switching |
+| torchvision | Dataset loading, image transforms, image grid visualization |
+| pomegranate | Gaussian Mixture Model implementation (CPU and GPU) |
+| scikit-learn | Preprocessing (scaling, PCA), evaluation metrics |
+| scipy | Cluster-to-label assignment matching |
+| codecarbon | Energy and CO2e measurement |
+| psutil | Peak RAM tracking |
+| numpy | General array math |
+| pandas | Results tables, CSV read/write |
+| matplotlib | Plots and generated image grids |
+| threading | Background memory polling during training |
+| time | Wall-clock timing |
